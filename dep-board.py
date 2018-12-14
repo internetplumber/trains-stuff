@@ -41,7 +41,8 @@ header = xsd.Element(
 )
 header_value = header(TokenValue=LDB_TOKEN)
 if len(DEST) > 0:
-    res = client.service.GetDepBoardWithDetails(numRows=9, crs=ORIGIN, filterCrs=DEST, timeOffset=OFFSET, _soapheaders=[header_value])
+    res = client.service.GetDepBoardWithDetails(numRows=9, crs=ORIGIN, filterCrs=DEST, timeOffset=OFFSET,
+                                                _soapheaders=[header_value])
     destSta = res.filterLocationName
 else:
     res = client.service.GetDepBoardWithDetails(numRows=9, crs=ORIGIN, _soapheaders=[header_value])
