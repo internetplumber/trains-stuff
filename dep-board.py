@@ -3,9 +3,11 @@
 #
 # Show the list of departures from a station, optionally filtered by
 # destination.
-#     dep-board.py ORIGIN [DEST]
+#     dep-board.py ORIGIN [DEST] [OFFSET]
 #
 # ORIGIN and DEST should both be three character CRS codes.
+# OFFSET is the offset from the current time (in minutes, <120) to view the
+# departure boards.
 #
 
 from zeep import Client
@@ -15,16 +17,18 @@ import sys
 LDB_TOKEN = ''
 WSDL = 'http://lite.realtime.nationalrail.co.uk/OpenLDBWS/wsdl.aspx?ver=2017-10-01'
 DEST = ''
+OFFSET = 0
 destSta = ''
 
 if len(sys.argv) < 2:
     print("Please supply an origin station.")
     sys.exit()
-elif len(sys.argv) == 2:
+if len(sys.argv) >= 2:
     ORIGIN = sys.argv[1]
-elif len(sys.argv) == 3:
-    ORIGIN = sys.argv[1]
+if len(sys.argv) >= 3:
     DEST = sys.argv[2]
+if len(sys.argv) >= 4:
+    OFFSET = sys.argv[3]
 
 client = Client(wsdl=WSDL)
 header = xsd.Element(
@@ -37,7 +41,7 @@ header = xsd.Element(
 )
 header_value = header(TokenValue=LDB_TOKEN)
 if len(DEST) > 0:
-    res = client.service.GetDepBoardWithDetails(numRows=9, crs=ORIGIN, filterCrs=DEST, _soapheaders=[header_value])
+    res = client.service.GetDepBoardWithDetails(numRows=9, crs=ORIGIN, filterCrs=DEST, timeOffset=OFFSET, _soapheaders=[header_value])
     destSta = res.filterLocationName
 else:
     res = client.service.GetDepBoardWithDetails(numRows=9, crs=ORIGIN, _soapheaders=[header_value])
